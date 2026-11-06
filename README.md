@@ -86,7 +86,7 @@ switch; a running one keeps the model it began with.
 | `presets.magpie.kt.model` | the picked gateway model id, e.g. `auto/deepseek-v4.1-flash` |
 | `presets.magpie.kt.max_context` | the model's context window |
 | `presets.magpie.kt.max_output` | the model's output limit |
-| `presets.magpie.kt.extra_body` | `{reasoning_effort: high}` when the model offers it, else `{}` |
+| `presets.magpie.kt.extra_body` | `{reasoning_effort: high}` for a `flash` model, `{reasoning_effort: medium}` for any other, `{}` when it offers neither |
 
 Nothing else in the file is touched: comments, ordering and every other
 `presets.magpie.*` entry survive, so `kt run --llm magpie/glm-flash` keeps
@@ -110,9 +110,13 @@ wrong place.
 **Reasoning goes in `extra_body`.** kt's OpenAI-shaped backend ignores a
 top-level `reasoning_effort`; only `extra_body` is merged into the request body
 unchanged and reaches the provider through the gateway. The map is written whole
-rather than as `extra_body.reasoning_effort`, so a model without a high level
-clears the previous one instead of leaving it set, and so switching the plugin
-off removes the key with it.
+rather than as `extra_body.reasoning_effort`, so a model that offers neither
+level clears the previous one instead of leaving it set, and so switching the
+plugin off removes the key with it.
+
+**Effort follows one rule: `flash` → `high`, everything else → `medium`.** The
+level is only written when the model lists it; a model with no reasoning levels
+gets an empty map rather than a parameter it would reject.
 
 **The request key is kt's own.** kt never takes a literal key from this file,
 only the env var a backend names, so `MAGPIE_API_KEY` in
@@ -178,7 +182,8 @@ magpie/kt`、`backends.magpie.*`（`openai` / `gateway.v1` / `MAGPIE_API_KEY` /
 
 **思考档位必须走 `extra_body`**：kt 的 openai 型 backend 不读顶层
 `reasoning_effort`，只有 `extra_body` 会原样进请求体。整块 map 写入，换模型时
-不会留下上一档的残留。
+不会留下上一档的残留。档位规则：**`flash` 模型用 `high`，其余用 `medium`**；模型
+本身没列这一档时不写，避免发它不认识的参数。
 
 **注意**：① kt 只在**新会话**读配置；② 摘除后 magpie 会留下惰性的
 `presets.magpie.kt: {}`（写入器不剪空 map），删两行即可；③ kt 只认

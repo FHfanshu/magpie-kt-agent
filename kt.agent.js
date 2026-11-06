@@ -56,13 +56,15 @@ export function connect({ gateway, model }) {
     [`${preset}.max_context`]: model?.context || 500000,
     [`${preset}.max_output`]: model?.output || 65536,
   }
-  // kt's openai backend ignores a top-level reasoning_effort: only extra_body
-  // reaches the provider unchanged. Written as one whole map, so switching kt
-  // off takes the key with it instead of leaving an empty "extra_body: {}", and
-  // a model without a high level clears whatever a previous one set.
+  // Effort rule (2026-11-06): a "flash" model runs at high, anything else at
+  // medium. kt's openai backend ignores a top-level reasoning_effort: only
+  // extra_body reaches the provider unchanged. Written as one whole map, so
+  // switching kt off takes the key with it instead of leaving an empty
+  // "extra_body: {}", and a model that offers neither level clears the old one.
   const efforts = (model && model.efforts) || []
-  out[`${preset}.extra_body`] = efforts.includes("high")
-    ? { reasoning_effort: "high" }
+  const wanted = /flash/i.test(String((model && model.id) || "")) ? "high" : "medium"
+  out[`${preset}.extra_body`] = efforts.includes(wanted)
+    ? { reasoning_effort: wanted }
     : {}
   return out
 }

@@ -1,6 +1,6 @@
 {
   "name": "magpie-kt-agent",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Magpie agent plugin: put KohakuTerrarium (kt) on magpie's Agents page and write the model into kt's llm_profiles.yaml",
   "type": "module",
   "files": [
