@@ -1,0 +1,27 @@
+{
+  "name": "magpie-kt-agent",
+  "version": "0.1.0",
+  "description": "Magpie agent plugin: put KohakuTerrarium (kt) on magpie's Agents page and write the model into kt's llm_profiles.yaml",
+  "type": "module",
+  "files": [
+    "kt.agent.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "magpie-plugin",
+    "magpie",
+    "agent",
+    "kohakuterrarium",
+    "kt"
+  ],
+  "license": "MIT",
+  "magpie": {
+    "agent": "./kt.agent.js",
+    "name": "KohakuTerrarium (kt)",
+    "summary": {
+      "en": "Adds KohakuTerrarium to magpie's Agents page: pick a model there and magpie writes it into kt's llm_profiles.yaml, gateway address and reasoning level included.",
+      "zh": "把 KohakuTerrarium 加进 magpie 的 Agents 页：在 magpie 里选模型，magpie 就把模型、网关地址和思考档位写进 kt 的 llm_profiles.yaml。"
+    }
+  }
+}
